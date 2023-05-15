@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Студенты{% endblock %}
+{% block content %}
+	<h1>Добавить школьника</h1>
+	<form>
+		<label for="fio">ФИО</label>
+		<input class="form-control" type="text" name="fio" id="fio" placeholder="Иванов Иван Иванович" />
+		<label for="passport">Серия, номер паспорта</label>
+		<input class="form-control" type="text" name="passport" id="passport" placeholder="9801123456" />
+		<label for="school">Название школы</label>
+		<input class="form-control" type="text" name="school" id="school" placeholder="СОШ №1 г. Якутска" />
+		<a class="btn btn-primary" href="#" id="save">Добавить</a></li>
+	</form>
+{% endblock %}
+{% block script %}
+InitAccount();
+
+let save_button = document.getElementById("save");
+let fio = document.getElementById("fio");
+let passport = document.getElementById("passport");
+let school = document.getElementById("school");
+
+save_button.addEventListener('click', (event)=>{
+	event.preventDefault();
+	if (passport.value.length < 1 ||
+		fio.value.length < 1 ||
+		school.value.length < 1)
+	{
+		alert("Вы не заполнили форму!");
+		return;
+	}
+	contract.methods.AddStudent(passport.value, school.value, fio.value)
+	.send({ 
+		'from': wallet,
+		'gasLimit': 3000000
+	})
+	.on('receipt', (receipt) =>{
+		if(receipt.status)
+		{
+			alert(fio.value + " успешно добавлен!");
+		}
+	})
+	.on('error', error => {
+		alert(error);
+	})
+	.catch((error, receipt)=>{
+		alert(error);
+	});
+});
+{% endblock %}

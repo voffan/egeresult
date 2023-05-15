@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Электронный ЕГЭ{% endblock %}
+{% block content %}
+	<h1>Предметы в системе</h1>
+	<div class="container">
+		<div class="row">
+			<div class="col">
+				<ul class="list-group" id="result">
+				</ul>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<form>
+					<label for="subject">Название предмета</label>
+					<input class="form-control" type="text" name="subject" id="subject" placeholder="Математика" />
+					<input class="btn btn-primary" type="submit" id="submit" value="Добавить"/>
+				</form>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+{% block script %}
+InitAccount()
+.then(()=>{
+	console.log("I got ",wallet);
+	contract.methods.GetSubjects().call({ 'from': wallet })
+	.then((data)=>{
+		let ul = document.getElementById('result');
+		ul.innerHTML = '';
+		data.forEach(element=>{
+			li = document.createElement('li')
+			li.appendChild(document.createTextNode(element));
+			ul.appendChild(li);
+		});
+	})
+	.catch(error=>{
+		alert(error);
+	});
+})
+.catch((error)=>{
+	alert(error);
+});
+
+let button = document.getElementById("submit");
+button.addEventListener('click', (event)=>{
+	event.preventDefault();
+	var subject = document.getElementById("subject");
+	if(subject.value.length < 1)
+	{
+		alert('Вы не задали наименование предмета!');
+		return;
+	}
+	contract.methods.AddSubject(subject.value)
+	.send({ 
+		'from': wallet,
+		'gasLimit': 3000000
+	})
+	.on('receipt',(receipt)=>{
+		if(receipt.status)
+		{
+			let ul = document.getElementById('result');
+			li = document.createElement('li')
+			li.appendChild(document.createTextNode(subject.value));
+			ul.appendChild(li);	
+		}
+	})
+	.on('error', (error)=>{
+		alert(error);
+	});
+});
+{% endblock %}

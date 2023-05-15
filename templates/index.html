@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Электронный ЕГЭ{% endblock %}
+{% block content %}
+	<h1>Проверить результаты ЕГЭ</h1>
+	<div class="container">
+		<div class="row">
+			<div class="col">
+				<ul class="list-group" id="result">
+				</ul>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<form>
+					<label for="passsport">Серия и номер паспорта</label>
+					<input class="form-control" type="text" name="passport" id="passport" placeholder="9901123456" />
+					<input class="btn btn-primary" type="submit" id="submit" value="Проверить"/>
+				</form>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+{% block script %}
+InitAccount()
+.then(()=>{
+	contract.methods.GetSubjects().call({ 'from': wallet })
+	.then(data=>{
+		subjects = data;
+	})
+	.catch(error=>{
+		alert(error);
+	})
+})
+.catch(error=>{
+	alert(error);
+});
+let button = document.getElementById("submit");
+let results = document.getElementById("result");
+button.addEventListener('click', (event)=>{
+	event.preventDefault();
+	results.innerHTML="";
+	var passport = document.getElementById("passport");
+	contract.methods.GetStudentResult(passport.value).call()
+	.then((data)=>{
+		if (data.length < 1)
+		{
+			let li = document.createElement("li");
+			li.appendChild(document.createTextNode("Результатов не найдено"));
+			results.appendChild(li);
+			return;
+		}
+		data.forEach(element=>{
+			let li = document.createElement("li");
+			li.appendChild(document.createTextNode(subjects[element[0]] +" ("+element[1]+"г.) " + element[2] + " баллов"))
+			results.appendChild(li);
+		});
+	})
+	.catch((error)=>{
+		alert(error);
+	});
+});
+{% endblock %}

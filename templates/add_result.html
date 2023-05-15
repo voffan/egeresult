@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}Студенты{% endblock %}
+{% block content %}
+	<h1>Добавить результаты ЕГЭ</h1>
+	<div class="alert alert-info" role="alert">
+		<p>Серия и номер паспорта вводите без разделителей!</p>
+		<p>Год сдачи экзамена не может быть раньше 2015 г. и позднее текущего!</p>
+		<p>Количество набранных баллов должны быть в пределах от 0 до 100!</p>
+	</div>
+	<form>
+		<label for="passport">Серия, номер паспорта</label>
+		<input class="form-control" type="text" name="passport" id="passport" placeholder="9801123456" />
+		<label for="subject">Предмет</label>
+		<select class="form-control" id="subject" name="subject" ></select>
+		<label for="year">Год сдачи</label>
+		<input class="form-control" type="text" name="year" id="year" placeholder="2023" />
+		<label for="points">Баллы</label>
+		<input class="form-control" type="text" name="points" id="points" placeholder="100" />
+		<input class="btn btn-primary" type="submit" id="submit" value="Добавить"/>
+	</form>
+{% endblock %}
+{% block script %}
+let subjects = [];
+let current_year = new Date().getFullYear();
+let passport = document.getElementById("passport");
+let subject = document.getElementById("subject")
+let year = document.getElementById("year");
+let points = document.getElementById("points");
+
+year.value = current_year;
+InitAccount()
+.then(()=>{
+	contract.methods.GetSubjects().call({ 'from': wallet })
+	.then(data => {
+		subject.innerHTML = '';
+		data.forEach((element, index) =>{
+			let opt = document.createElement("option");
+			opt.value = index;
+			opt.text = element;
+			subject.add(opt);
+		});
+	})
+	.catch(error => {
+		alert(error);
+	})
+})
+.catch((error)=>{
+	alert(error);
+});
+
+let button = document.getElementById("submit");
+button.addEventListener('click', (event)=>{
+	event.preventDefault();
+	if (passport.value.length < 1 ||
+		subject.value.length < 1 ||
+		(parseInt(year.value) < 2015 || parseInt(year.value) > current_year) ||
+		(parseInt(points.value) < 0 || parseInt(points.value) > 100))
+	{
+		alert("Вы неправильно заполнили форму!");
+		return;
+	}
+	contract.methods.AddEditExamResult(passport.value, subject.value, year.value, points.value)
+	.send({ 
+		'from': wallet,
+		'gasLimit': 3000000
+	})
+	.on('receipt', (receipt) =>{
+		if (receipt.status)
+		{
+			alert("Результаты для " + passport.value + " успешно добавлен!");
+		}
+	})
+	.on('error', error=>{
+		alert(error);
+	})
+	.catch((error)=>{
+		alert(error);
+	});
+});
+{% endblock %}

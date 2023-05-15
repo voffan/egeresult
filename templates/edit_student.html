@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Студенты{% endblock %}
+{% block content %}
+	<h1>Редактировать школьника</h1>
+	<form>
+		<label for="fio">ФИО</label>
+		<input class="form-control" type="text" name="fio" id="fio" placeholder="Иванов Иван Иванович" />
+		<label for="passport">Серия, номер паспорта</label>
+		<input class="form-control" type="text" name="passport" id="passport" placeholder="9801123456" />
+		<label for="school">Название школы</label>
+		<input class="form-control" type="text" name="school" id="school" placeholder="СОШ №1 г. Якутска" />
+		<a class="btn btn-primary" href="#" id="get">Получить</a></li>
+		<a class="btn btn-primary" href="#" id="edit">Изменить</a></li>
+	</form>
+{% endblock %}
+{% block script %}
+InitAccount();
+
+let get_button = document.getElementById("get");
+let edit_button = document.getElementById("edit");
+let fio = document.getElementById("fio");
+let passport = document.getElementById("passport");
+let school = document.getElementById("school");
+
+get_button.addEventListener('click', (event)=>{
+	event.preventDefault();
+	if (passport.value.length < 1)
+	{
+		alert("Вы не заполнили номер паспорта!");
+		return;
+	}
+	contract.methods.GetStudent(passport.value)
+	.call({ 
+		'from': wallet
+	})
+	.then((data) =>{
+		school.value = data[0];
+		fio.value = data[1];
+	})
+	.catch((error, receipt)=>{
+		alert(error);
+	});
+});
+
+edit_button.addEventListener('click', (event)=>{
+	event.preventDefault();
+	if (passport.value.length < 1 ||
+		fio.value.length < 1 ||
+		school.value.length < 1)
+	{
+		alert("Вы не заполнили форму!");
+		return;
+	}
+	contract.methods.EditStudent(passport.value, school.value, fio.value)
+	.send({ 
+		'from': wallet,
+		'gasLimit': 3000000
+	})
+	.on('receipt', (receipt) =>{
+		if(receipt.status)
+		{
+			alert(fio.value + " успешно изменен!");
+		}
+	})
+	.on('error', (error)=>{
+		alert(error);
+	})
+	.catch((error, receipt)=>{
+		alert(error);
+	});
+});
+{% endblock %}
