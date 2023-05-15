@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Электронный ЕГЭ{% endblock %}
+{% block content %}
+	<h1>Редактировать предмет</h1>
+	<div class="container">
+		<div class="row">
+			<div class="col">
+				<form>
+					<label for="old_name">Старое название предмета</label>
+					<input class="form-control" type="text" name="old_name" id="old_name" value="{{ old_name }}" disabled />
+					<label for="subject">Название предмета</label>
+					<input class="form-control" type="text" name="subject" id="subject" placeholder="Математика" />
+					<input class="btn btn-primary" type="submit" id="submit" value="Изменить"/>
+				</form>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+{% block script %}
+InitAccount();
+
+let button = document.getElementById("submit");
+button.addEventListener('click', (event)=>{
+	event.preventDefault();
+	var subject = document.getElementById("subject");
+	var old_name = document.getElementById("old_name");
+	if(subject.value.length < 1)
+	{
+		alert('Вы не задали наименование предмета!');
+		return;
+	}
+	contract.methods.EditSubject(old_name.value, subject.value)
+	.send({ 
+		'from': wallet,
+		'gasLimit': 3000000
+	})
+	.on('receipt',(receipt)=>{
+		if(receipt.status)
+		{
+			window.location.href = document.referrer;
+		}
+	})
+	.on('error', (error)=>{
+		alert(error);
+	});
+});
+{% endblock %}
