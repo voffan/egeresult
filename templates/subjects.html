@@ -21,6 +21,16 @@
 	</div>
 {% endblock %}
 {% block script %}
+let base_url = window.location.origin;
+function AddListItem(ul, text)
+{
+	let li = document.createElement('li');
+	let a = document.createElement('a');
+	a.appendChild(document.createTextNode(text));
+	a.href = new URL('/edit_subject/'+text+'/', base_url);
+	li.appendChild(a);
+	ul.appendChild(li);
+}
 InitAccount()
 .then(()=>{
 	console.log("I got ",wallet);
@@ -29,9 +39,7 @@ InitAccount()
 		let ul = document.getElementById('result');
 		ul.innerHTML = '';
 		data.forEach(element=>{
-			li = document.createElement('li')
-			li.appendChild(document.createTextNode(element));
-			ul.appendChild(li);
+			AddListItem(ul, element);
 		});
 	})
 	.catch(error=>{
@@ -59,10 +67,7 @@ button.addEventListener('click', (event)=>{
 	.on('receipt',(receipt)=>{
 		if(receipt.status)
 		{
-			let ul = document.getElementById('result');
-			li = document.createElement('li')
-			li.appendChild(document.createTextNode(subject.value));
-			ul.appendChild(li);	
+			AddListItem(document.getElementById('result'), subject.value);
 		}
 	})
 	.on('error', (error)=>{

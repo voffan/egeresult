@@ -26,3 +26,8 @@ def edit_student():
 @app.route('/add_result/')
 def add_result():
 	return flask.render_template('add_result.html')
+
+
+@app.route('/edit_subject/<string:old_name>/')
+def edit_result(old_name):
+	return flask.render_template('edit_subject.html', old_name=old_name)
