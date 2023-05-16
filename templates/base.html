@@ -62,7 +62,7 @@
 		}
 		try
 		{
-			let accounts = await ethereum.request({'method':'eth_accounts'});
+			let accounts = await ethereum.request({'method':'eth_requestAccounts'});
 			wallet = accounts[0];
 			console.log("Now I am", wallet);
 		}catch(error)
