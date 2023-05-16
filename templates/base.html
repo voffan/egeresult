@@ -55,6 +55,7 @@
 	let smrt_cntrct_ld = document.getElementById("load");
 	async function InitAccount()
 	{
+		if (ethereum === undefined) alert("You have no metamask or haven't logged in!");
 		try
 		{
 			let accounts = await ethereum.request({'method':'eth_accounts'});
@@ -96,10 +97,9 @@
 		let contract_adr = document.getElementById('contract_adr');
 		load_contract(contract_adr.value);
 	});
-	if (ethereum != undefined)
-	{
-		{% block script %}{% endblock %}
-		ethereum.on('accountsChanged', (accounts) => { wallet = accounts[0]; console.log(wallet);});
-	} else alert("You have no metamask or haven't logged in!");
+	ethereum.on('accountsChanged', (accounts) => { 
+		wallet = accounts[0]; console.log(wallet);
+	});
+	{% block script %}{% endblock %}
 </script>
 </html>

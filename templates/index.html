@@ -26,12 +26,12 @@ let button = document.getElementById("submit");
 let results = document.getElementById("result");
 
 button.addEventListener('click', (event)=>{
+	event.preventDefault();
 	if (contract == null)
 	{
 		alert("смарт-контракт не загружен!");
 		return;
 	}
-	event.preventDefault();
 	results.innerHTML="";
 	var passport = document.getElementById("passport");
 	contract.methods.GetSubjects().call({ 'from': wallet })
