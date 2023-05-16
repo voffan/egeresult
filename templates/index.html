@@ -21,42 +21,43 @@
 	</div>
 {% endblock %}
 {% block script %}
-InitAccount()
-.then(()=>{
+InitAccount();
+let button = document.getElementById("submit");
+let results = document.getElementById("result");
+
+button.addEventListener('click', (event)=>{
+	if (contract == null)
+	{
+		alert("смарт-контракт не загружен!");
+		return;
+	}
+	event.preventDefault();
+	results.innerHTML="";
+	var passport = document.getElementById("passport");
 	contract.methods.GetSubjects().call({ 'from': wallet })
 	.then(data=>{
 		subjects = data;
+		contract.methods.GetStudentResult(passport.value).call()
+		.then((data)=>{
+			if (data.length < 1)
+			{
+				let li = document.createElement("li");
+				li.appendChild(document.createTextNode("Результатов не найдено"));
+				results.appendChild(li);
+				return;
+			}
+			data.forEach(element=>{
+				let li = document.createElement("li");
+				li.appendChild(document.createTextNode(subjects[element[0]] +" ("+element[1]+"г.) " + element[2] + " баллов"))
+				results.appendChild(li);
+			});
+		})
+		.catch((error)=>{
+			alert(error);
+		});
 	})
 	.catch(error=>{
 		alert(error);
 	})
-})
-.catch(error=>{
-	alert(error);
-});
-let button = document.getElementById("submit");
-let results = document.getElementById("result");
-button.addEventListener('click', (event)=>{
-	event.preventDefault();
-	results.innerHTML="";
-	var passport = document.getElementById("passport");
-	contract.methods.GetStudentResult(passport.value).call()
-	.then((data)=>{
-		if (data.length < 1)
-		{
-			let li = document.createElement("li");
-			li.appendChild(document.createTextNode("Результатов не найдено"));
-			results.appendChild(li);
-			return;
-		}
-		data.forEach(element=>{
-			let li = document.createElement("li");
-			li.appendChild(document.createTextNode(subjects[element[0]] +" ("+element[1]+"г.) " + element[2] + " баллов"))
-			results.appendChild(li);
-		});
-	})
-	.catch((error)=>{
-		alert(error);
-	});
 });
 {% endblock %}

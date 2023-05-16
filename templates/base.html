@@ -13,6 +13,20 @@
 <body>
 	<div class="container">
 		<div class="row">
+			<div class="col">
+				<div class="alert alert-danger" role="alert" id="alert">
+					Смарт-контракт не загружен!
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class=col>
+				<label for="contract_adr">Адрес смарт-контракта</label>
+				<input type="text" name="contract_adr" id="contract_adr" value="{{ contract_adr }}"/>
+				<button class="btn btn-primary" id="load">Загрузить</button>
+			</div>
+		</div>
+		<div class="row">
 			<div class=col>
 				<a href="{{ url_for('subjects') }}">Предметы</a>
 			</div>
@@ -35,10 +49,10 @@
 </body>
 <script>
 	let web3 = new Web3('http://localhost:7545')
-	let contract_adr = '0x28759E89a7582313E3EeF7E51EDCae8D1b5b3beb';//contract address
-	let contract = new web3.eth.Contract(abi, contract_adr);
+	let contract = null;
 	let wallet = '';
 	let subjects=[];
+	let smrt_cntrct_ld = document.getElementById("load");
 	async function InitAccount()
 	{
 		try
@@ -51,6 +65,37 @@
 			alert(error);
 		};
 	}
+	function load_contract(contract_adr)
+	{
+		if(web3.utils.isAddress(contract_adr))
+		{
+			contract = new web3.eth.Contract(abi, contract_adr);
+			let al = document.getElementById("alert");
+			al.innerHTML = "Смарт-контракт успешно загружен!";
+			al.classList.remove("alert-danger");
+			al.classList.add("alert-success");
+			document.querySelectorAll('a').forEach(link => {
+				link.href = link.href.includes('?')?link.href.slice(0, link.href.indexOf('?')):link.href +'?contract_adr=' + contract_adr;
+			});
+		}else{ 
+			let al = document.getElementById("alert");
+			al.innerHTML = "Проверьте правильность задания адреса смарт-контракта! Дальнейшая работа не возможна!";
+			al.classList.remove("alert-success");
+			al.classList.add("alert-danger");
+		}
+	}
+	window.addEventListener('load', (event)=>{
+		let contract_adr = document.getElementById('contract_adr');
+		if(contract_adr.value.length > 0)
+		{
+		 	load_contract(contract_adr.value);
+		}
+	});
+	smrt_cntrct_ld.addEventListener('click', (event)=>{
+		event.preventDefault();
+		let contract_adr = document.getElementById('contract_adr');
+		load_contract(contract_adr.value);
+	});
 	if (ethereum != undefined)
 	{
 		{% block script %}{% endblock %}
