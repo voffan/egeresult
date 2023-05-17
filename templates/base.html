@@ -21,12 +21,8 @@
 		</div>
 		<div class="row">
 			<div class=col>
-				<label for="contract_adr">Адрес смарт-контракта</label>
-				<input type="text" name="contract_adr" id="contract_adr" value="{{ contract_adr }}"/>
-				<button class="btn btn-primary" id="load">Загрузить</button>
+				<a href="{{ url_for('index') }}">На главную</a>
 			</div>
-		</div>
-		<div class="row">
 			<div class=col>
 				<a href="{{ url_for('subjects') }}">Предметы</a>
 			</div>
@@ -38,6 +34,13 @@
 			</div>
 			<div class=col>
 				<a href="{{ url_for('add_result') }}">Результаты</a>
+			</div>
+		</div>
+		<div class="row">
+			<div class=col>
+				<label for="contract_adr">Адрес смарт-контракта</label>
+				<input type="text" name="contract_adr" id="contract_adr" value="{{ contract_adr }}"/>
+				<button class="btn btn-primary" id="load">Загрузить</button>
 			</div>
 		</div>
 		<div class="row">
