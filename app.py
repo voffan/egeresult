@@ -5,7 +5,8 @@ app = flask.Flask(__name__)
 
 @app.route('/')
 def index():
-	return flask.render_template('index.html')
+	contract_adr = flask.request.args.get('contract_adr', '')
+	return flask.render_template('index.html', contract_adr=contract_adr)
 
 
 @app.route('/subjects/')
