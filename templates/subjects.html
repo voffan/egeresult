@@ -21,13 +21,13 @@
 	</div>
 {% endblock %}
 {% block script %}
-let base_url = window.location.origin;
 function AddListItem(ul, text)
 {
 	let li = document.createElement('li');
 	let a = document.createElement('a');
 	let contract_adr = document.getElementById('contract_adr');
 	a.appendChild(document.createTextNode(text));
+	let base_url = window.location.href.slice(0, window.location.href.indexOf('subjects'));
 	a.href = new URL('/edit_subject/?old_name='+text+'&contract_adr='+contract_adr.value, base_url);
 	li.appendChild(a);
 	ul.appendChild(li);
