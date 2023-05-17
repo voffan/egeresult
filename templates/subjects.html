@@ -28,7 +28,7 @@ function AddListItem(ul, text)
 	let contract_adr = document.getElementById('contract_adr');
 	a.appendChild(document.createTextNode(text));
 	let base_url = window.location.href.slice(0, window.location.href.indexOf('subjects'));
-	a.href = new URL('/edit_subject/?old_name='+text+'&contract_adr='+contract_adr.value, base_url);
+	a.href = new URL(base_url + 'edit_subject/?old_name='+text+'&contract_adr='+contract_adr.value);
 	li.appendChild(a);
 	ul.appendChild(li);
 }
