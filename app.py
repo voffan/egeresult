@@ -33,7 +33,8 @@ def add_result():
 	return flask.render_template('add_result.html', contract_adr=contract_adr);
 
 
-@app.route('/edit_subject/<string:old_name>/')
-def edit_result(old_name):
+@app.route('/edit_subject/')
+def edit_result():
 	contract_adr = flask.request.args.get('contract_adr', '')
+	old_name = flask.request.args.get('old_name', '')
 	return flask.render_template('edit_subject.html', old_name=old_name, contract_adr=contract_adr)
